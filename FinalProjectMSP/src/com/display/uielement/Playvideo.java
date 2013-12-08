@@ -21,7 +21,7 @@ class Playvideo extends VideoQueryUI implements Runnable {
 	static long  numFrames=QueryVideo.getFrameSize() ;
 
 	public void run() {
-		System.out.println("checking "+query_video_stop);
+//		System.out.println("checking "+query_video_stop);
 		
 		if (query_video_stop== true) {
 //			query_video_stop = false;
@@ -58,7 +58,7 @@ class Playvideo extends VideoQueryUI implements Runnable {
 	
    
 	private void play(long framenum, long numframes) {
-		PlayvideoComponent component = new PlayvideoComponent();
+		QPlayvideoComponent component = new QPlayvideoComponent();
 		
 		try {
 
@@ -161,7 +161,7 @@ System.out.println(j);
 		{
 			query_video_stop=true;	
 			component.setImg(null);
-			
+			int audiostartbyte = 0;
 			pane.add(component);
 			pane.repaint();
 //			int k=QueryVideo.getListofFrames().size();
@@ -205,7 +205,7 @@ System.out.println(j);
 //		this.pFLag = pFLag;
 //	}
 }
-class PlayvideoComponent extends JLabel {
+class QPlayvideoComponent extends JLabel {
 
 	public void paintComponent(Graphics g) {
 
@@ -214,7 +214,6 @@ class PlayvideoComponent extends JLabel {
 		Graphics2D g2 = (Graphics2D) g;
 
 		g2.drawImage(img, 0, 0, this);
-		//g2.drawLine(0,0,100,100);
 	}
 
 	public void setImg(BufferedImage newimg) {

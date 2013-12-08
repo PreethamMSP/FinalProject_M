@@ -37,13 +37,13 @@ class PlaySound extends VideoQueryUI implements Runnable {
 //				 query_video_stop = false;
 				this.play();
 			}
-		} catch (PlayWaveException e) {
+		} catch (QPlayWaveException e) {
 			e.printStackTrace();
 			return;
 		}
 	}
 
-	public void play() throws PlayWaveException {
+	public void play() throws QPlayWaveException {
 
 		try {
 			query_video_stop = false;
@@ -51,9 +51,9 @@ class PlaySound extends VideoQueryUI implements Runnable {
 			InputStream bufferedIn = new BufferedInputStream(this.waveStream);
 			audioInputStream = AudioSystem.getAudioInputStream(bufferedIn);
 		} catch (UnsupportedAudioFileException e1) {
-			throw new PlayWaveException(e1);
+			throw new QPlayWaveException(e1);
 		} catch (IOException e1) {
-			throw new PlayWaveException(e1);
+			throw new QPlayWaveException(e1);
 		}
 
 		audioFormat = audioInputStream.getFormat();
@@ -64,7 +64,7 @@ class PlaySound extends VideoQueryUI implements Runnable {
 			dataLine = (SourceDataLine) AudioSystem.getLine(info);
 			dataLine.open(audioFormat, this.EXTERNAL_BUFFER_SIZE);
 		} catch (LineUnavailableException e1) {
-			throw new PlayWaveException(e1);
+			throw new QPlayWaveException(e1);
 		}
 		qissrgetable = true;
 		// Starts the music :P
@@ -103,7 +103,7 @@ class PlaySound extends VideoQueryUI implements Runnable {
 			}
 
 		} catch (IOException e1) {
-			throw new PlayWaveException(e1);
+			throw new QPlayWaveException(e1);
 		}
 
 		finally {
@@ -114,7 +114,7 @@ class PlaySound extends VideoQueryUI implements Runnable {
 		}
 	}
 
-	private void replay() throws PlayWaveException {
+	private void replay() throws QPlayWaveException {
 		System.out.println("I can come here too");
 		query_video_stop = false;
 		query_video_pause = false;
@@ -125,9 +125,9 @@ class PlaySound extends VideoQueryUI implements Runnable {
 			InputStream bufferedIn = new BufferedInputStream(this.waveStream);
 			audioInputStream = AudioSystem.getAudioInputStream(bufferedIn);
 		} catch (UnsupportedAudioFileException e1) {
-			throw new PlayWaveException(e1);
+			throw new QPlayWaveException(e1);
 		} catch (IOException e1) {
-			throw new PlayWaveException(e1);
+			throw new QPlayWaveException(e1);
 		}
 		int readBytes = 0;
 		byte[] audioBuffer = new byte[this.EXTERNAL_BUFFER_SIZE];
@@ -140,7 +140,7 @@ class PlaySound extends VideoQueryUI implements Runnable {
 			dataLine = (SourceDataLine) AudioSystem.getLine(info);
 			dataLine.open(audioFormat, this.EXTERNAL_BUFFER_SIZE);
 		} catch (LineUnavailableException e1) {
-			throw new PlayWaveException(e1);
+			throw new QPlayWaveException(e1);
 		}
 		// Starts the music :P
 //		query_video_stop = false;
@@ -182,7 +182,7 @@ class PlaySound extends VideoQueryUI implements Runnable {
 			}
 
 		} catch (IOException e1) {
-			throw new PlayWaveException(e1);
+			throw new QPlayWaveException(e1);
 		}
 
 		finally {
@@ -243,21 +243,21 @@ class PlaySound extends VideoQueryUI implements Runnable {
 	// }
 
 }
-	class PlayWaveException extends Exception {
+	class QPlayWaveException extends Exception {
 
-		public PlayWaveException(String message) {
+		public QPlayWaveException(String message) {
 			super(message);
 		}
 
-		public PlayWaveException(Throwable cause) {
+		public QPlayWaveException(Throwable cause) {
 			super(cause);
 		}
 
-		public PlayWaveException(IOException cause) {
+		public QPlayWaveException(IOException cause) {
 			super(cause);
 		}
 
-		public PlayWaveException(String message, Throwable cause) {
+		public QPlayWaveException(String message, Throwable cause) {
 			super(message, cause);
 		}
 

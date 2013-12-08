@@ -117,16 +117,6 @@ public class SceneChangeDetector {
 
 			if(ratio[NoteId] > (avg+edgethreshold))
 			{
-//				JFrame Inputframe = new JFrame();
-//				 JLabel Inputlabel = new JLabel(new ImageIcon(DatabaseVideo.getListofFrames().get(NoteId)));
-//				Inputframe.getContentPane().add(Inputlabel, BorderLayout.CENTER);
-//				Inputframe.pack();
-//				Inputframe.setVisible(true);
-//				 Inputframe = new JFrame();
-//				 Inputlabel = new JLabel(new ImageIcon(DatabaseVideo.getListofFrames().get(NoteId+1)));
-//				Inputframe.getContentPane().add(Inputlabel, BorderLayout.CENTER);
-//				Inputframe.pack();
-//				Inputframe.setVisible(true);
 				SceneChangedFrames.add(DatabaseVideo.getListofFrames().get(NoteId));
 				SceneChangedFrames.add(DatabaseVideo.getListofFrames().get(NoteId+1));
 				Frametracker.add(NoteId);

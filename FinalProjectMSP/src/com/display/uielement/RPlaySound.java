@@ -6,10 +6,13 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import sun.audio.*;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.Line;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -25,15 +28,40 @@ class RPlaySound extends VideoQueryUI implements Runnable {
 
 	public void run() {
 		try {
+
 			if (result_video_stop == true) {
 				// query_video_stop = false;
-				replay();
+				try {
+					if (replay == true) {
+						replay = false;
+						this.play(audiostartbyte);
+						audiostartbyte = 0;
+					} else
+						this.play(0);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			} else if (result_video_pause == true) {
-				// query_video_stop = false;
-				this.notifyAll();
+				try {
+					if (replay == true) {
+						replay = false;
+						this.play(audiostartbyte);
+						audiostartbyte = 0;
+					} else
+						this.play(0);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			} else {
 				// query_video_stop = false;
-				this.play();
+				try {
+					this.play(0);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		} catch (PlayWaveException e) {
 			e.printStackTrace();
@@ -41,92 +69,95 @@ class RPlaySound extends VideoQueryUI implements Runnable {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
-	public void play() throws PlayWaveException {
+	//
+	// @SuppressWarnings("deprecation")
+	// public void play() throws PlayWaveException {
+	//
+	// try {
+	// result_video_stop = false;
+	// result_video_pause = false;
+	// InputStream bufferedIn = new BufferedInputStream(this.waveStream);
+	// audioInputStream = AudioSystem.getAudioInputStream(bufferedIn);
+	// } catch (UnsupportedAudioFileException e1) {
+	// throw new PlayWaveException(e1);
+	// } catch (IOException e1) {
+	// throw new PlayWaveException(e1);
+	// }
+	//
+	// audioFormat = audioInputStream.getFormat();
+	// Info info = new Info(SourceDataLine.class, audioFormat);
+	// dataLine = null;
+	//
+	// try {
+	// dataLine = (SourceDataLine) AudioSystem.getLine(info);
+	// dataLine.open(audioFormat, this.EXTERNAL_BUFFER_SIZE);
+	// } catch (LineUnavailableException e1) {
+	// throw new PlayWaveException(e1);
+	// }
+	// rissrgetable = true;
+	// // Starts the music :P
+	// dataLine.start();
+	//
+	// int readBytes = 0;
+	// byte[] audioBuffer = new byte[this.EXTERNAL_BUFFER_SIZE];
+	//
+	// try {
+	// while (readBytes != -1) {
+	//
+	// if (result_video_stop == true) {
+	// dataLine.stop();
+	// dataLine.flush();
+	// inputStream.close();
+	// return;
+	// } else if (result_video_pause == true) {
+	//
+	// synchronized(this)
+	// {
+	// while(result_video_pause == true)
+	// {
+	// try {
+	// this.wait();
+	//
+	//
+	// } catch (InterruptedException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	// }
+	// }
+	// dataLine.start();
+	//
+	// } else {
+	//
+	// readBytes = audioInputStream.read(audioBuffer, 0,
+	// audioBuffer.length);
+	// if (readBytes >= 0) {
+	// dataLine.write(audioBuffer, audiostartbyte, readBytes);
+	//
+	// }
+	// }
+	//
+	// }
+	//
+	// } catch (IOException e1) {
+	// throw new PlayWaveException(e1);
+	// }
+	//
+	// finally {
+	// // plays what's left and and closes the audioChannel
+	// dataLine.drain();
+	// dataLine.close();
+	// result_video_stop = true;
+	// }
+	// }
 
-		try {
-			result_video_stop = false;
-			result_video_pause = false;
-			InputStream bufferedIn = new BufferedInputStream(this.waveStream);
-			audioInputStream = AudioSystem.getAudioInputStream(bufferedIn);
-		} catch (UnsupportedAudioFileException e1) {
-			throw new PlayWaveException(e1);
-		} catch (IOException e1) {
-			throw new PlayWaveException(e1);
-		}
-
-		audioFormat = audioInputStream.getFormat();
-		Info info = new Info(SourceDataLine.class, audioFormat);
-		dataLine = null;
-
-		try {
-			dataLine = (SourceDataLine) AudioSystem.getLine(info);
-			dataLine.open(audioFormat, this.EXTERNAL_BUFFER_SIZE);
-		} catch (LineUnavailableException e1) {
-			throw new PlayWaveException(e1);
-		}
-		rissrgetable = true;
-		// Starts the music :P
-		dataLine.start();
-
-		int readBytes = 0;
-		byte[] audioBuffer = new byte[this.EXTERNAL_BUFFER_SIZE];
-
-		try {
-			while (readBytes != -1) {
-
-				if (result_video_stop == true) {
-					dataLine.stop();
-					dataLine.flush();
-					inputStream.close();
-					return;
-				} else if (result_video_pause == true) {
-					
-					synchronized(this)
-					{
-						while(result_video_pause == true)
-						{
-							try {
-								this.wait();
-								
-								
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-					}
-						dataLine.start();
-														
-				} else {
-					
-					readBytes = audioInputStream.read(audioBuffer, 0,
-							audioBuffer.length);
-					if (readBytes >= 0) {
-						dataLine.write(audioBuffer, 0, readBytes);
-
-					}
-				}
-
-			}
-
-		} catch (IOException e1) {
-			throw new PlayWaveException(e1);
-		}
-
-		finally {
-			// plays what's left and and closes the audioChannel
-			dataLine.drain();
-			dataLine.close();
-			result_video_stop = true;
-		}
-	}
-
-	private void replay() throws PlayWaveException {
-		System.out.println("I can come here too");
+	private void play(int startpoint) throws PlayWaveException,
+			InterruptedException {
+		// System.out.println("I can come here too");
 		result_video_stop = false;
-		result_video_pause = false;
-		Rreplay=true;
+//		result_video_pause = false;
+		replay=false;
+//		Rreplay = true;
 
 		try {
 
@@ -145,71 +176,97 @@ class RPlaySound extends VideoQueryUI implements Runnable {
 		dataLine = null;
 
 		try {
-			dataLine = (SourceDataLine) AudioSystem.getLine(info);
-			dataLine.open(audioFormat, this.EXTERNAL_BUFFER_SIZE);
+			// dataLine = (SourceDataLine) AudioSystem.getLine(info);
+			// dataLine.open(audioFormat, this.EXTERNAL_BUFFER_SIZE);
+			clip = (Clip) AudioSystem.getLine(new Line.Info(Clip.class));
+			clip.open(audioInputStream);
+			System.out.println("starting audio" + clip.getBufferSize() + " "
+					+ clip.available());
+			clip.setFramePosition(startpoint);
+			
+			clip.start();
+			t3.sleep(1000);
+			
 		} catch (LineUnavailableException e1) {
 			throw new PlayWaveException(e1);
 		}
-		// Starts the music :P
-		
-		dataLine.start();
-		try {
-			while (readBytes != -1) {
-				if (result_video_stop == true) {
-					dataLine.stop();
-					dataLine.flush();
-					inputStream.close();
 
-					return;
-				} else if (result_video_pause == true) {
-					
-
-					synchronized(this)
-					{
-						while(result_video_pause == true)
-						{
-							try {
-								this.wait();
-								
-								
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-					}
-						dataLine.start();
-//					
-				} else {
-
-					readBytes = audioInputStream.read(audioBuffer, 0,
-							audioBuffer.length);
-					if (readBytes >= 0) {
-						dataLine.write(audioBuffer, 0, readBytes);
-
-					}
-				}
-
-			}
-
-		} catch (IOException e1) {
-			throw new PlayWaveException(e1);
+		catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		// Starts the music :P
+
+		// dataLine.start();
+		// try {
+		// while (readBytes != -1) {
+		// if (result_video_stop == true) {
+		// // dataLine.stop();
+		// // dataLine.flush();
+		// clip.stop();
+		// clip.flush();
+		// inputStream.close();
+		//
+		// return;
+//		 } else 
+			 
+		// }
+		// }
+		// // dataLine.start();
+		// clip.start();
+		// //
+		// } else {
+		// long x=0;
+		// if(replay==true)
+		// {
+		// replay=false;
+		// // audiostartbyte=(int)
+		// (((window.scrollBar.getValue()-5)/24)*(getSampleRate())*audioFormat.getFrameSize());
+		//
+		// // x=audioInputStream.skip(audiostartbyte);
+		// // System.out.println("replay true" +
+		// audiostartbyte+"Skip length "+x);
+		// clip.setFramePosition(audiostartbyte);
+		// }
+		//
+		//
+		// else
+		// {
+		// readBytes = audioInputStream.read(audioBuffer, 0,
+		// audioBuffer.length);
+		// if (readBytes >= 0) {
+		//
+		// dataLine.write(audioBuffer, 0, readBytes);
+		//
+		// }
+		// }
+		// }
+		//
+		// }
+		//
+		// } catch (IOException e1) {
+		//
+		// throw new PlayWaveException(e1);
+		// }
 
 		finally {
 			// plays what's left and and closes the audioChannel
-			dataLine.drain();
-
-			dataLine.stop();
+			// dataLine.drain();
+			//
+			// dataLine.stop();
+			clip.drain();
+			clip.stop();
 			try {
 				inputStream.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			dataLine.flush();
-
-			dataLine.close();
+			// dataLine.flush();
+			//
+			// dataLine.close();
+			clip.flush();
+			clip.close();
 			result_video_stop = true;
 
 		}
@@ -217,22 +274,36 @@ class RPlaySound extends VideoQueryUI implements Runnable {
 	}
 
 	public long getPosition() {
-		return dataLine.getLongFramePosition();
+		// return dataLine.getLongFramePosition();
+		return clip.getLongFramePosition();
+
 	}
 
 	public float getSampleRate() {
 		// if (this == null)
 		// System.out.print("null=====");
 		return audioFormat.getFrameRate();
+
 	}
+
 	public boolean getActive() {
-		return dataLine.isActive();
-			}
+		// return dataLine.isActive();
+		return clip.isActive();
+	}
+
+	public float getSampleSize() {
+		// if (this == null)
+		// System.out.print("null=====");
+		return audioFormat.getFrameSize();
+
+	}
+
 	public SourceDataLine dataLine;
 	private AudioFormat audioFormat;
 	private InputStream waveStream;
 	private final int EXTERNAL_BUFFER_SIZE = 524288;
 	static AudioInputStream audioInputStream = null;
+	public Clip clip;
 
 	// private boolean Flag;
 	// public boolean isFlag() {
@@ -254,22 +325,23 @@ class RPlaySound extends VideoQueryUI implements Runnable {
 	// }
 
 }
-	class PlayWaveException extends Exception {
 
-		public PlayWaveException(String message) {
-			super(message);
-		}
+class PlayWaveException extends Exception {
 
-		public PlayWaveException(Throwable cause) {
-			super(cause);
-		}
-
-		public PlayWaveException(IOException cause) {
-			super(cause);
-		}
-
-		public PlayWaveException(String message, Throwable cause) {
-			super(message, cause);
-		}
-
+	public PlayWaveException(String message) {
+		super(message);
 	}
+
+	public PlayWaveException(Throwable cause) {
+		super(cause);
+	}
+
+	public PlayWaveException(IOException cause) {
+		super(cause);
+	}
+
+	public PlayWaveException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+}

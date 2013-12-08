@@ -3,11 +3,7 @@ package com.common.videoAudioutility;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 
-/**
- * <p><em>This software has been released into the public domain.
- * <strong>Please read the notes in this source file for additional information.
- * </strong></em></p>
- * 
+/*
  * <p>This class provides a configurable implementation of the Canny edge
  * detection algorithm. This classic algorithm has a number of shortcomings,
  * but remains an effective tool in many scenarios. <em>This class is designed

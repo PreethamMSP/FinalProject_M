@@ -139,12 +139,12 @@ public class VideoShotMetaDataExtractor {
 		for(int index = 0; index < videoList.size(); index++){
 			CvFileStorage cvfile, cvfile2;
 			cvfile = opencv_core.cvOpenFileStorage(
-					"C:\\DataExtracted2\\FeatColorMetadata"+index+".xml", // filename
+					"C:\\DataExtracted\\FeatColorMetadata"+index+".xml", // filename
 					null, // memstorage
 					CV_STORAGE_WRITE, // flags
 					null); // encoding
 			cvfile2 = opencv_core.cvOpenFileStorage(
-					"C:\\DataExtracted2\\HistrMetadata"+index+".xml", // filename
+					"C:\\DataExtracted\\HistrMetadata"+index+".xml", // filename
 					null, // memstorage
 					CV_STORAGE_WRITE, // flags
 					null); // encoding
@@ -172,7 +172,7 @@ public class VideoShotMetaDataExtractor {
 		ObjectOutputStream oos = null;
 		FileOutputStream fout = null;
 		try{
-			fout = new FileOutputStream("C:\\DataExtracted2\\Metadata.msp", true);
+			fout = new FileOutputStream("C:\\DataExtracted\\Metadata.msp", true);
 			oos = new ObjectOutputStream(fout);
 			oos.writeObject(videoList);
 		} catch (Exception ex) {
