@@ -17,7 +17,7 @@ import javax.swing.*;
 
 @SuppressWarnings("serial")
 public class DrawGraph {
-
+	DrawGraphComponent graphdraw;
    List<GraphDatatracker> gtracker;
    int Vindex;
 
@@ -28,14 +28,16 @@ public class DrawGraph {
    
 
    public void createAndShowGui(int VideoIndex, JPanel frame, BufferedImage img) {
-      DrawGraphComponent graphdraw = new DrawGraphComponent(this.gtracker, VideoIndex);
+	   graphdraw = new DrawGraphComponent(this.gtracker, VideoIndex);
+	   frame.removeAll();
+	   frame.repaint();
+	  // graphdraw.setOpaque(true);
       graphdraw.setBounds(0, 0, 363, 70);
       graphdraw.setPreferredSize(new Dimension(363, 70));
       frame.add(graphdraw);
       frame.setOpaque(true);
       frame.repaint();
       frame.setVisible(true);
-      graphdraw.setOpaque(true);
    }
 }
 
