@@ -82,7 +82,7 @@ public class QueryClipMetaDataExtractor {
 				ind = 0;
 				QueryVideo.getListofFrames().add(img);
 			}
-
+			QueryVideo.SetFrameSize(frameindex);
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -104,44 +104,122 @@ public class QueryClipMetaDataExtractor {
 		QueryVideo.ExtractAudioFingerPrint(sampleWave);
 
 		List<Double> FinalListBuddy = new ArrayList<Double>();
-		GraphDatatracker []g = new GraphDatatracker[ExtractedMetadata.size()];
+		List<GraphDatatracker>graph = new ArrayList<GraphDatatracker>();
 		for(int i = 0; i < ExtractedMetadata.size(); i++)
 		{
-			g[i] = util.library.MatchVideoAudio(QueryVideo, ExtractedMetadata.get(i));
-			System.out.println(i+" ------------------gologolo------------"+ g[i].getMatchSum()+"---"+g[i].getAudioMatchSum());
-			FinalListBuddy.add(0.5*g[i].getMatchSum()+0.5*g[i].getAudioMatchSum());
+			graph.add(util.library.MatchVideoAudio(QueryVideo, ExtractedMetadata.get(i)));
+			FinalListBuddy.add(0.5*graph.get(i).getMatchSum()+0.5*graph.get(i).getAudioMatchSum());
 		}
 		
-		System.out.print("1st best match:"+IndexMatch(g,ExtractedMetadata.size(),findKthMax(FinalListBuddy, 1))
-				+"\n"+"Second Best Match:"+IndexMatch(g,ExtractedMetadata.size(),findKthMax(FinalListBuddy, 2))+"\n"
-		+"Third Best Match"+IndexMatch(g,ExtractedMetadata.size(),findKthMax(FinalListBuddy, 3))+"\n"
-		+"Fourth Best Match"+IndexMatch(g,ExtractedMetadata.size(),findKthMax(FinalListBuddy, 4))+"\n");
+		System.out.print("1st best match:"+IndexMatch(graph,ExtractedMetadata.size(),findKthMax(FinalListBuddy, 1))
+				+"\n"+"Second Best Match:"+IndexMatch(graph,ExtractedMetadata.size(),findKthMax(FinalListBuddy, 2))+"\n"
+		+"Third Best Match"+IndexMatch(graph,ExtractedMetadata.size(),findKthMax(FinalListBuddy, 3))+"\n"
+		+"Fourth Best Match"+IndexMatch(graph,ExtractedMetadata.size(),findKthMax(FinalListBuddy, 4))+"\n");
 		
 		
+		int [] best_match = new int[3]; 
+		for(int i = 0; i < 3; i++)
+			best_match[i] = IndexMatch(graph,ExtractedMetadata.size(),findKthMax(FinalListBuddy, i+1));
 		
 		/*
 		 * Make sure to read the Extracted Videos before UI elements are sprung up
 		 * That is read the 3 best videos to be shown first
 		 */
-		
+		List<VideoAudioShot>ExtractedMeta = new ArrayList<VideoAudioShot>();
+		String tempstr[] = {"wreck4","wreck3","wreck2"};
+		for(int i = 0; i < 3; i++){
+			List<BufferedImage>Frames = new ArrayList<BufferedImage>();
+			try {
+				//File file = new File("Rsrc_d/"+tempstr[i]+".rgb");
+				File file = new File(ExtractedMetadata.get(best_match[i]).getFileName()+".rgb");
+				InputStream is = new FileInputStream(file);
+				VideoAudioShot newVideo =  new VideoAudioShot(best_match[i]);
+
+
+				long len = file.length();
+				byte[] bytes = new byte[(int)len];
+
+				int offset = 0;
+				int numRead = 0;
+				while (offset < bytes.length && (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0) {
+					offset += numRead;
+				}
+
+				int ind = 0;
+				int bytesread = (height*width*3); int frameindex = 0;
+
+
+				while((frameindex*bytesread) < len){
+					BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+					for(int y = 0; y < height; y++){
+						for(int x = 0; x < width; x++){
+
+							byte a = 0;
+							byte r = bytes[(frameindex*bytesread)+ind];
+							byte g = bytes[(frameindex*bytesread)+ind+height*width];
+							byte b = bytes[(frameindex*bytesread)+ind+height*width*2]; 
+							//RGBImg[y][x] = new Pixel(r, g, b);
+							int pix = 0xff000000 | ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff);
+							//int pix = ((a << 24) + (r << 16) + (g << 8) + b);
+							img.setRGB(x,y,pix);
+							ind++;
+
+						}
+					}
+					Frames.add(img);
+					frameindex++;
+					ind = 0;
+				}
+				newVideo.setListofFrames(Frames);
+				newVideo.SetFrameSize(Frames.size());
+				String temp =  ExtractedMetadata.get(best_match[i]).getFileName();
+				temp = temp.substring(7);
+				System.out.println(temp);
+				newVideo.setFileName(temp);
+				ExtractedMeta.add(newVideo);
+
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 		/*
 		 * UI- Design Elements to be called from here
 		 * UI elements:
 		 * 1.  VideoAudio Playback
 		 * 2.  Graph Construction sample Graph construction added here [TODO: Complete building the graph]
-		 * 3.  Both elements needs to shown on the same UI template 
+		 * 3.  Both elements needs to shown on the same UI template
+		 *  
 		 */
-		DrawGraph Graphutil = new DrawGraph(g[0]);
-	    Graphutil.createAndShowGui();
+		
+//		JFrame OutputFrame = new JFrame();
+//		JLabel OutputLabel = new JLabel(new ImageIcon(ExtractedMetadata.get(2).getListofProcessedFrames().get(10)));
+//		OutputFrame.getContentPane().add(OutputLabel, BorderLayout.CENTER);
+//		OutputFrame.pack();
+//		OutputFrame.setVisible(true);
+		DrawGraph Graphutil = new DrawGraph(graph);
+	   
+		VideoQueryUI window=new VideoQueryUI(ExtractedMeta,QueryVideo, args[1], Graphutil);
+		window.querystart();
+
+		
+	    
+	    
+	    
+	    
+	    
 
 	}
 
-	private static int IndexMatch(GraphDatatracker g[], int Ssize, double tobeMatchedNo)
+	
+	
+	private static int IndexMatch(List<GraphDatatracker> g, int Ssize, double tobeMatchedNo)
 	{
 		for(int i = 0; i < Ssize; i++)
 		{
-			if((0.5*g[i].getMatchSum()+0.5*g[i].getAudioMatchSum()) == tobeMatchedNo)
-				return i+1;
+			if((0.5*g.get(i).getMatchSum()+0.5*g.get(i).getAudioMatchSum()) == tobeMatchedNo)
+				return i;
 		}
 		return -1;
 	}

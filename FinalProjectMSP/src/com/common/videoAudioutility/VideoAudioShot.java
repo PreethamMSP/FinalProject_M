@@ -54,6 +54,7 @@ public class VideoAudioShot implements Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 	int VideoID;
+	String VideoFileName;
 	int TotalNoofFrames;
 	List<Pixel [][]>capturedframes = new ArrayList<Pixel [][]>();
 	transient List<BufferedImage>Frames = new ArrayList<BufferedImage>();
@@ -72,7 +73,12 @@ public class VideoAudioShot implements Serializable{
 		VideoID = index;
 		HistogramValue = new ArrayList<CvHistogram>();
 	}
-
+	
+	public String getFileName()
+	{
+		return VideoFileName;
+	}
+	
 	public int getVideoID()
 	{
 		return VideoID;
@@ -147,6 +153,10 @@ public class VideoAudioShot implements Serializable{
 
 	public List<Integer> getFrameTrackerdata(){
 		return this.Frametracker;
+	}
+	
+	public void setFileName(String name){
+		this.VideoFileName = name;
 	}
 
 	public void setListofProcessedFrames(List<BufferedImage> ProcessedFrames){
